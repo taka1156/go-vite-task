@@ -1,0 +1,41 @@
+extend type Mutation {
+    createTaskState(inputTaskState:  InputTaskState!):TaskState!
+    updateTaskState(updateTaskState: UpdateTaskState!):TaskState!
+    deleteTaskState(taskStateId: String):Boolan!
+}
+
+extend type Query {
+    taskState(taskId: ID!, searchWord:String!):[TaskState!]! 
+}
+
+input InputTaskState {
+    progress: Int!
+    taskId: ID
+    taskName: String!
+    link: String
+    description: String
+    taskFlagId: ID!
+    taskFlagName: String!
+}
+
+input UpdateTaskState {
+    taskStateId: ID
+    progress: Int!
+    taskId: ID
+    taskName: String!
+    link: String
+    description: String
+    taskFlagId: ID!
+    taskFlagName: String!
+}
+
+type TaskState {
+    task: Task!
+    taskFlag: TaskFlag!
+    progress: Int!
+}
+
+type TaskFlag {
+    taskFlagId: ID!
+    taskFlagName: String!
+}

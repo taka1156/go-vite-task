@@ -1,0 +1,29 @@
+extend type Mutation {
+    createTask(inputTask:  InputTask!):Task!
+    updateTask(updateTask: UpdateTask!):Task!
+    deleteTask(taskId: String):Boolan!
+}
+
+extend type Query {
+    task(taskId: ID!, searchWord:String!):[Task!]! 
+}
+
+input InputTask {
+    taskName: String!
+    link: String
+    description: String
+}
+
+input UpdateTask {
+    taskId: ID
+    taskName: String!
+    link: String
+    description: String
+}
+
+type Task {
+    taskId: ID
+    taskName: String!
+    link: String
+    description: String
+}

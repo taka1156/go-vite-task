@@ -1,0 +1,29 @@
+extend type Mutation {
+    createTeam(inputTeam: InputTeam!):Team!
+    updateTeam(updateTeam: UpdateTeam!):Team!
+    deleteTeam(teamId: String):Boolan!
+}
+
+extend type Query {
+    team(teamId: ID!):[Team!]! 
+}
+
+input InputTeam {
+    teanName: String!
+    teamMemo: String
+    users: [ID!]!
+}
+
+input UpdateTeam {
+    teamId: ID!
+    teamName: String!
+    teamMemo: String
+    users: [ID!]!
+}
+
+type Team {
+    teamId: ID!
+    teamName: String!
+    teamMemo: String
+    users: [ID!]!
+}

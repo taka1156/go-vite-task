@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  frontend:
+    build: ./node
+    ports:
+      - '3000:3000'
+    tty: true
+    volumes:
+      - ../frontend:/frontend
+
+  backend:
+    build: ./golang
+    tty: true
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+    volumes:
+      - ../backend/app:/go/src/app
+
+  db:
+    build: ./mysql
+    environment:
+      - MYSQL_DATABASE=sample
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=root_password
+    tty: true
+    ports:
+      - 3306:3306
+    volumes:
+      - ./db:/var/lib/mysql
+
+volumes:
+    db: {}

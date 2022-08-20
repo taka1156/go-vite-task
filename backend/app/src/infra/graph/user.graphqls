@@ -1,0 +1,28 @@
+extend type Mutation {
+    createUser(inputUser: InputTeam!):User!
+    updateUser(updateUser: UpdateUser!):User!
+    deleteUser(userId: String):Boolan!
+}
+
+extend type Query {
+    user(userId: ID!, searchWord:String!):[User!]! 
+}
+
+input InputUser {
+    userName: String!
+    email: String!
+    password: String!
+}
+
+input UpdateUser {
+    userId: ID!
+    userName: String!
+    email: String!
+}
+
+type User {
+    userId: ID!
+    userName: String!
+    email: String!
+    roleId: ID!
+}
