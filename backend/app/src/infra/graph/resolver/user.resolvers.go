@@ -20,7 +20,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, updateUser model.Upda
 }
 
 // DeleteUser is the resolver for the deleteUser field.
-func (r *mutationResolver) DeleteUser(ctx context.Context, userID *string) (string, error) {
+func (r *mutationResolver) DeleteUser(ctx context.Context, userID string) (string, error) {
 	panic(fmt.Errorf("not implemented: DeleteUser - deleteUser"))
 }
 

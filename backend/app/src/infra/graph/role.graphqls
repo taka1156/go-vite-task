@@ -1,0 +1,26 @@
+extend type Mutation {
+    createRole(inputRole: InputRole!):Role!
+    updateRole(updateRole: UpdateRole!):Role!
+    deleteRole(roleId: ID!):Boolan!
+}
+
+extend type Query {
+    role(roleId: ID!, searchWord:String!):[Role!]! 
+}
+
+input InputRole {
+    roleName: String!
+    roleIcon: String
+}
+
+input UpdateRole {
+    roleId: ID!
+    roleName: String!
+    roleIcon: String
+}
+
+type Role {
+    roleId: ID!
+    roleName: String!
+    roleIcon: String
+}

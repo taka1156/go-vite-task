@@ -5,7 +5,7 @@ import (
 )
 
 type UpdateUserAdapter interface {
-	Do(user model.UpdateUser) (*int, error)
+	Do(input model.UpdateUser) (*int, error)
 }
 
 type UpdateUserDependencies struct {

@@ -20,7 +20,7 @@ func (r *mutationResolver) UpdateTeam(ctx context.Context, updateTeam model.Upda
 }
 
 // DeleteTeam is the resolver for the deleteTeam field.
-func (r *mutationResolver) DeleteTeam(ctx context.Context, teamID *string) (string, error) {
+func (r *mutationResolver) DeleteTeam(ctx context.Context, teamID string) (string, error) {
 	panic(fmt.Errorf("not implemented: DeleteTeam - deleteTeam"))
 }
 

@@ -1,7 +1,7 @@
 extend type Mutation {
     createUser(inputUser: InputTeam!):User!
     updateUser(updateUser: UpdateUser!):User!
-    deleteUser(userId: String):Boolan!
+    deleteUser(userId: ID!):Boolan!
 }
 
 extend type Query {
@@ -20,6 +20,7 @@ input UpdateUser {
     userName: String!
     email: String!
     userIcon: String
+    password: String!
     roleId: ID
 }
 

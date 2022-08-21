@@ -20,7 +20,7 @@ func (r *mutationResolver) UpdateTaskState(ctx context.Context, updateTaskState 
 }
 
 // DeleteTaskState is the resolver for the deleteTaskState field.
-func (r *mutationResolver) DeleteTaskState(ctx context.Context, taskStateID *string) (string, error) {
+func (r *mutationResolver) DeleteTaskState(ctx context.Context, taskStateID string) (string, error) {
 	panic(fmt.Errorf("not implemented: DeleteTaskState - deleteTaskState"))
 }
 

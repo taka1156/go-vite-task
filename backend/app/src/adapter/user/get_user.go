@@ -2,35 +2,75 @@ package user
 
 import (
 	"app/entity/model"
-	"app/entity/model/db_model"
 	"app/infra/database"
 	"app/usecases"
-	"strconv"
+	"database/sql"
 )
 
 type GetUserDependencies struct {
-	gormHandler *database.GormHandler
+	sqlAdapter *database.SqlAdapter
 }
 
 func (dep GetUserDependencies) Do(userId *int) (*model.User, error) {
-	getReacord := &db_model.User{}
 
-	err := dep.gormHandler.DB.Where("user_id = ?", userId).First(getReacord)
+	stmt := `
+	select 
+		user.user_id,
+		user.user_name,
+		user.email
+		user.user_icon,
+		role_id
+	from
+		users
+	where
+		users.user_id = ? and
+
+		user.deleted_at is null
+	`
+	defer dep.sqlAdapter.DB.Close()
+
+	rows, err := dep.sqlAdapter.DB.Query(stmt, userId)
+
 	if err != nil {
-		return nil, err.Error
+		return nil, err
 	}
 
-	resultRecord := &model.User{
-		UserID:   strconv.Itoa(int(getReacord.UserId)),
-		UserName: getReacord.UserName,
-		UserIcon: getReacord.UserIcon,
-		Email:    getReacord.Email,
-		RoleID:   nil,
+	rows.Next()
+
+	d := struct {
+		UserID   string
+		UserName string
+		Email    string
+		UserIcon sql.NullString
+		RoleID   sql.NullString
+	}{}
+
+	rows.Scan(
+		&d.UserID,
+		&d.UserName,
+		&d.Email,
+		&d.UserIcon,
+		&d.RoleID,
+	)
+
+	blankToNil := func(column sql.NullString) *string {
+		if column.Valid {
+			return &column.String
+		}
+		return nil
 	}
 
-	return resultRecord, nil
+	user := &model.User{
+		UserID:   d.UserID,
+		UserName: d.UserName,
+		Email:    d.Email,
+		UserIcon: blankToNil(d.UserIcon),
+		RoleID:   blankToNil(d.RoleID),
+	}
+
+	return user, nil
 }
 
-func NewGetUserAdapter(gormHandler *database.GormHandler) usecases.GetUserAdapter {
-	return &GetUserDependencies{gormHandler}
+func NewGetUserAdapter(sqlAdapter *database.SqlAdapter) usecases.GetUserAdapter {
+	return &GetUserDependencies{sqlAdapter}
 }

@@ -2,7 +2,6 @@ package user
 
 import (
 	"app/entity/model"
-	"app/entity/model/db_model"
 	"app/infra/database"
 	"app/usecases"
 	"strconv"
@@ -10,32 +9,51 @@ import (
 )
 
 type UpdateUserDependencies struct {
-	gormHandler *database.GormHandler
+	sqlAdapter *database.SqlAdapter
+}
+
+func canSelectRole(userId string) {
+
 }
 
 func (dep UpdateUserDependencies) Do(input model.UpdateUser) (*int, error) {
 	currentTime := time.Now()
 
-	updateRecord := &db_model.User{
-		UserName:  input.UserName,
-		Email:     input.Email,
-		UserIcon:  input.UserIcon,
-		UpdatedAt: currentTime,
-	}
+	stmt := `
+	update
+		users
+	set
+		user_name = ?
+		email = ?
+		user_icon = ?
+		update_at = ?
+	where
+		users.user_id = ? and
 
-	isOk := dep.gormHandler.DB.Model(&db_model.User{}).Where("user_id = ?", input.UserID).Updates(updateRecord).Error
-	if isOk != nil {
-		return nil, isOk
-	}
+		users.deleted_at is null
+	`
+	defer dep.sqlAdapter.DB.Close()
 
-	updateId, err := strconv.Atoi(input.UserID)
+	_, err := dep.sqlAdapter.DB.Exec(
+		stmt,
+		input.UserName,
+		input.Email,
+		input.UserIcon,
+		currentTime,
+		input.UserID,
+	)
 	if err != nil {
 		return nil, err
 	}
 
-	return &updateId, nil
+	castUserId, err := strconv.Atoi(input.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &castUserId, nil
 }
 
-func NewUpdateUserAdapter(gormHandler *database.GormHandler) usecases.UpdateUserAdapter {
-	return &UpdateUserDependencies{gormHandler}
+func NewUpdateUserAdapter(sqlAdapter *database.SqlAdapter) usecases.UpdateUserAdapter {
+	return &UpdateUserDependencies{sqlAdapter}
 }

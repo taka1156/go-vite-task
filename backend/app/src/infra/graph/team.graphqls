@@ -1,7 +1,7 @@
 extend type Mutation {
     createTeam(inputTeam: InputTeam!):Team!
     updateTeam(updateTeam: UpdateTeam!):Team!
-    deleteTeam(teamId: String):Boolan!
+    deleteTeam(teamId: ID!):Boolan!
 }
 
 extend type Query {
@@ -9,21 +9,30 @@ extend type Query {
 }
 
 input InputTeam {
-    teanName: String!
+    teamName: String!
+    teamIcon: String
     teamMemo: String
+    startDate: Date!
+    endDate: Date!
     users: [ID!]!
 }
 
 input UpdateTeam {
     teamId: ID!
     teamName: String!
+    teamIcon: String
     teamMemo: String
+    startDate: Date!
+    endDate: Date!
     users: [ID!]!
 }
 
 type Team {
     teamId: ID!
     teamName: String!
+    teamIcon: String
     teamMemo: String
-    users: [ID!]!
+    startDate: Date!
+    endDate: Date!
+    users: [User!]!
 }

@@ -5,7 +5,6 @@ package resolver
 
 import (
 	"app/entity/model"
-	"app/infra/graph/generated"
 	"context"
 	"fmt"
 )
@@ -21,7 +20,7 @@ func (r *mutationResolver) UpdateTask(ctx context.Context, updateTask model.Upda
 }
 
 // DeleteTask is the resolver for the deleteTask field.
-func (r *mutationResolver) DeleteTask(ctx context.Context, taskID *string) (string, error) {
+func (r *mutationResolver) DeleteTask(ctx context.Context, taskID string) (string, error) {
 	panic(fmt.Errorf("not implemented: DeleteTask - deleteTask"))
 }
 
@@ -29,12 +28,3 @@ func (r *mutationResolver) DeleteTask(ctx context.Context, taskID *string) (stri
 func (r *queryResolver) Task(ctx context.Context, taskID string, searchWord string) ([]*model.Task, error) {
 	panic(fmt.Errorf("not implemented: Task - task"))
 }
-
-// Mutation returns generated.MutationResolver implementation.
-func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
-
-// Query returns generated.QueryResolver implementation.
-func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
-
-type mutationResolver struct{ *Resolver }
-type queryResolver struct{ *Resolver }

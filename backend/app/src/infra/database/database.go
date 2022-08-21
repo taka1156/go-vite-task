@@ -2,14 +2,14 @@ package database
 
 import (
 	"app/envars"
+	"database/sql"
 	"fmt"
 
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
+	_ "github.com/go-sql-driver/mysql"
 )
 
-type GormHandler struct {
-	DB *gorm.DB
+type SqlAdapter struct {
+	DB *sql.DB
 }
 
 func isErr(err error) bool {
@@ -20,7 +20,7 @@ func isErr(err error) bool {
 	return false
 }
 
-func DbInit() *GormHandler {
+func DbInit() *SqlAdapter {
 	// "user:password@tcp(db:3306)/sample?"
 	dbSetting := fmt.Sprintf(
 		"%s:%s@tcp(%s)/%s?charset=%s&collation=%s&parseTime=%s",
@@ -32,16 +32,14 @@ func DbInit() *GormHandler {
 		envars.DbEnv.COLLATION,
 		envars.DbEnv.PARSETIME,
 	)
-	db, err := gorm.Open(envars.DbEnv.DB_NAME, dbSetting)
+	db, err := sql.Open(envars.DbEnv.DB_NAME, dbSetting)
 	if err != nil {
 		panic(err.Error)
 	}
 
-	db.LogMode(true)
+	sqlAdapter := new(SqlAdapter)
 
-	gormHandler := new(GormHandler)
+	sqlAdapter.DB = db
 
-	gormHandler.DB = db
-
-	return gormHandler
+	return sqlAdapter
 }

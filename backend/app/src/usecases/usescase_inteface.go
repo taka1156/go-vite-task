@@ -9,3 +9,11 @@ type CreateUserInteface interface {
 type UpdateUserInteface interface {
 	Handle(input model.UpdateUser) (*model.User, error)
 }
+
+type CreateTeamInterface interface {
+	Handle(input model.InputTeam) (*model.Team, error)
+}
+
+type UpdateTeamInteface interface {
+	Handle(input model.UpdateTeam) (*model.Team, error)
+}

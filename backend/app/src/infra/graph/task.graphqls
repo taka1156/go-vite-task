@@ -1,7 +1,7 @@
 extend type Mutation {
     createTask(inputTask:  InputTask!):Task!
     updateTask(updateTask: UpdateTask!):Task!
-    deleteTask(taskId: String):Boolan!
+    deleteTask(taskId: ID!):Boolan!
 }
 
 extend type Query {

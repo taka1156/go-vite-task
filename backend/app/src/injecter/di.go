@@ -20,12 +20,12 @@ type Function struct {
 func Injection() {
 
 	// Infrastructure
-	gormHandler := database.DbInit()
+	sqlAdapter := database.DbInit()
 
 	// Adapter
-	createUserAdapter := user.NewCreateUserAdapter(gormHandler)
-	getUserAdapter := user.NewGetUserAdapter(gormHandler)
-	updateUserAdapter := user.NewUpdateUserAdapter(gormHandler)
+	createUserAdapter := user.NewCreateUserAdapter(sqlAdapter)
+	getUserAdapter := user.NewGetUserAdapter(sqlAdapter)
+	updateUserAdapter := user.NewUpdateUserAdapter(sqlAdapter)
 
 	// Usecase
 	creatUserUsecase := usecases.NewCreateUserUsecase(createUserAdapter, getUserAdapter)

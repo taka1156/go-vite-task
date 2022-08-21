@@ -2,6 +2,11 @@
 
 package model
 
+type InputRole struct {
+	RoleName string  `json:"roleName"`
+	RoleIcon *string `json:"roleIcon"`
+}
+
 type InputTask struct {
 	TaskName    string  `json:"taskName"`
 	Link        *string `json:"link"`
@@ -19,9 +24,12 @@ type InputTaskState struct {
 }
 
 type InputTeam struct {
-	TeanName string   `json:"teanName"`
-	TeamMemo *string  `json:"teamMemo"`
-	Users    []string `json:"users"`
+	TeamName  string   `json:"teamName"`
+	TeamIcon  *string  `json:"teamIcon"`
+	TeamMemo  *string  `json:"teamMemo"`
+	StartDate string   `json:"startDate"`
+	EndDate   string   `json:"endDate"`
+	Users     []string `json:"users"`
 }
 
 type InputUser struct {
@@ -29,6 +37,12 @@ type InputUser struct {
 	Email    string  `json:"email"`
 	UserIcon *string `json:"userIcon"`
 	Password string  `json:"password"`
+}
+
+type Role struct {
+	RoleID   string  `json:"roleId"`
+	RoleName string  `json:"roleName"`
+	RoleIcon *string `json:"roleIcon"`
 }
 
 type Task struct {
@@ -50,10 +64,19 @@ type TaskState struct {
 }
 
 type Team struct {
-	TeamID   string   `json:"teamId"`
-	TeamName string   `json:"teamName"`
-	TeamMemo *string  `json:"teamMemo"`
-	Users    []string `json:"users"`
+	TeamID    string  `json:"teamId"`
+	TeamName  string  `json:"teamName"`
+	TeamIcon  *string `json:"teamIcon"`
+	TeamMemo  *string `json:"teamMemo"`
+	StartDate string  `json:"startDate"`
+	EndDate   string  `json:"endDate"`
+	Users     []*User `json:"users"`
+}
+
+type UpdateRole struct {
+	RoleID   string  `json:"roleId"`
+	RoleName string  `json:"roleName"`
+	RoleIcon *string `json:"roleIcon"`
 }
 
 type UpdateTask struct {
@@ -75,10 +98,13 @@ type UpdateTaskState struct {
 }
 
 type UpdateTeam struct {
-	TeamID   string   `json:"teamId"`
-	TeamName string   `json:"teamName"`
-	TeamMemo *string  `json:"teamMemo"`
-	Users    []string `json:"users"`
+	TeamID    string   `json:"teamId"`
+	TeamName  string   `json:"teamName"`
+	TeamIcon  *string  `json:"teamIcon"`
+	TeamMemo  *string  `json:"teamMemo"`
+	StartDate string   `json:"startDate"`
+	EndDate   string   `json:"endDate"`
+	Users     []string `json:"users"`
 }
 
 type UpdateUser struct {
