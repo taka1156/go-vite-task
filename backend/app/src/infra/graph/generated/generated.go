@@ -95,6 +95,7 @@ type ComplexityRoot struct {
 		Email    func(childComplexity int) int
 		RoleID   func(childComplexity int) int
 		UserID   func(childComplexity int) int
+		UserIcon func(childComplexity int) int
 		UserName func(childComplexity int) int
 	}
 }
@@ -439,6 +440,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.UserID(childComplexity), true
 
+	case "User.userIcon":
+		if e.complexity.User.UserIcon == nil {
+			break
+		}
+
+		return e.complexity.User.UserIcon(childComplexity), true
+
 	case "User.userName":
 		if e.complexity.User.UserName == nil {
 			break
@@ -640,6 +648,7 @@ extend type Query {
 input InputUser {
     userName: String!
     email: String!
+    userIcon: String
     password: String!
 }
 
@@ -647,13 +656,16 @@ input UpdateUser {
     userId: ID!
     userName: String!
     email: String!
+    userIcon: String
+    roleId: ID
 }
 
 type User {
     userId: ID!
     userName: String!
+    userIcon: String
     email: String!
-    roleId: ID!
+    roleId: ID
 }
 `, BuiltIn: false},
 }
@@ -1577,6 +1589,8 @@ func (ec *executionContext) fieldContext_Mutation_createUser(ctx context.Context
 				return ec.fieldContext_User_userId(ctx, field)
 			case "userName":
 				return ec.fieldContext_User_userName(ctx, field)
+			case "userIcon":
+				return ec.fieldContext_User_userIcon(ctx, field)
 			case "email":
 				return ec.fieldContext_User_email(ctx, field)
 			case "roleId":
@@ -1642,6 +1656,8 @@ func (ec *executionContext) fieldContext_Mutation_updateUser(ctx context.Context
 				return ec.fieldContext_User_userId(ctx, field)
 			case "userName":
 				return ec.fieldContext_User_userName(ctx, field)
+			case "userIcon":
+				return ec.fieldContext_User_userIcon(ctx, field)
 			case "email":
 				return ec.fieldContext_User_email(ctx, field)
 			case "roleId":
@@ -1955,6 +1971,8 @@ func (ec *executionContext) fieldContext_Query_user(ctx context.Context, field g
 				return ec.fieldContext_User_userId(ctx, field)
 			case "userName":
 				return ec.fieldContext_User_userName(ctx, field)
+			case "userIcon":
+				return ec.fieldContext_User_userIcon(ctx, field)
 			case "email":
 				return ec.fieldContext_User_email(ctx, field)
 			case "roleId":
@@ -2770,6 +2788,47 @@ func (ec *executionContext) fieldContext_User_userName(ctx context.Context, fiel
 	return fc, nil
 }
 
+func (ec *executionContext) _User_userIcon(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_userIcon(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserIcon, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_User_userIcon(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _User_email(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_User_email(ctx, field)
 	if err != nil {
@@ -2835,14 +2894,11 @@ func (ec *executionContext) _User_roleId(ctx context.Context, field graphql.Coll
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalOID2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_User_roleId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4802,7 +4858,7 @@ func (ec *executionContext) unmarshalInputInputUser(ctx context.Context, obj int
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"userName", "email", "password"}
+	fieldsInOrder := [...]string{"userName", "email", "userIcon", "password"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -4822,6 +4878,14 @@ func (ec *executionContext) unmarshalInputInputUser(ctx context.Context, obj int
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
 			it.Email, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "userIcon":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userIcon"))
+			it.UserIcon, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5034,7 +5098,7 @@ func (ec *executionContext) unmarshalInputUpdateUser(ctx context.Context, obj in
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"userId", "userName", "email"}
+	fieldsInOrder := [...]string{"userId", "userName", "email", "userIcon", "roleId"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -5062,6 +5126,22 @@ func (ec *executionContext) unmarshalInputUpdateUser(ctx context.Context, obj in
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
 			it.Email, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "userIcon":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userIcon"))
+			it.UserIcon, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "roleId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleId"))
+			it.RoleID, err = ec.unmarshalOID2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5538,6 +5618,10 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "userIcon":
+
+			out.Values[i] = ec._User_userIcon(ctx, field, obj)
+
 		case "email":
 
 			out.Values[i] = ec._User_email(ctx, field, obj)
@@ -5549,9 +5633,6 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 
 			out.Values[i] = ec._User_roleId(ctx, field, obj)
 
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

@@ -25,9 +25,10 @@ type InputTeam struct {
 }
 
 type InputUser struct {
-	UserName string `json:"userName"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	UserName string  `json:"userName"`
+	Email    string  `json:"email"`
+	UserIcon *string `json:"userIcon"`
+	Password string  `json:"password"`
 }
 
 type Task struct {
@@ -81,14 +82,17 @@ type UpdateTeam struct {
 }
 
 type UpdateUser struct {
-	UserID   string `json:"userId"`
-	UserName string `json:"userName"`
-	Email    string `json:"email"`
+	UserID   string  `json:"userId"`
+	UserName string  `json:"userName"`
+	Email    string  `json:"email"`
+	UserIcon *string `json:"userIcon"`
+	RoleID   *string `json:"roleId"`
 }
 
 type User struct {
-	UserID   string `json:"userId"`
-	UserName string `json:"userName"`
-	Email    string `json:"email"`
-	RoleID   string `json:"roleId"`
+	UserID   string  `json:"userId"`
+	UserName string  `json:"userName"`
+	UserIcon *string `json:"userIcon"`
+	Email    string  `json:"email"`
+	RoleID   *string `json:"roleId"`
 }

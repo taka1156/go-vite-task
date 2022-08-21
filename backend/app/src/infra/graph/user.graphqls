@@ -11,6 +11,7 @@ extend type Query {
 input InputUser {
     userName: String!
     email: String!
+    userIcon: String
     password: String!
 }
 
@@ -18,11 +19,14 @@ input UpdateUser {
     userId: ID!
     userName: String!
     email: String!
+    userIcon: String
+    roleId: ID
 }
 
 type User {
     userId: ID!
     userName: String!
+    userIcon: String
     email: String!
-    roleId: ID!
+    roleId: ID
 }

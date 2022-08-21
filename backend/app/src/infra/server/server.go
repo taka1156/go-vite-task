@@ -13,7 +13,7 @@ import (
 )
 
 func App() {
-	var PORT = envars.Env.PORT
+	var PORT = envars.ServerEnv.PORT
 
 	e := echo.New()
 
