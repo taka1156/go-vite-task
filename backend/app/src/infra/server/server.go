@@ -1,7 +1,7 @@
 package server
 
 import (
-	"app/infra/envars"
+	"app/envars"
 	"app/infra/graph/generated"
 	"app/infra/graph/resolver"
 	"log"

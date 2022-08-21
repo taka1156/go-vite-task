@@ -1,7 +1,7 @@
 package database
 
 import (
-	"app/infra/envars"
+	"app/envars"
 	"fmt"
 
 	"github.com/jinzhu/gorm"
