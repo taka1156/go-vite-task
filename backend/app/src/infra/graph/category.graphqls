@@ -1,0 +1,26 @@
+extend type Mutation {
+    createCategory(inputCategory: InputCategory!):Category!
+    updateCategory(updateCategory: UpdateCategory!):Category!
+    deleteCategory(categoryId: ID!):Boolan!
+}
+
+extend type Query {
+    category(categoryId: ID!, searchWord:String!):[Category!]! 
+}
+
+input InputCategory {
+    categoryName: String!
+    categoryIcon: String
+}
+
+input UpdateCategory {
+    categoryId: ID!
+    categoryName: String!
+    categoryIcon: String
+}
+
+type Category {
+    categoryId: ID!
+    categoryName: String!
+    categoryIcon: String
+}

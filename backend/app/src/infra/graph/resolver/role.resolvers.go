@@ -5,7 +5,6 @@ package resolver
 
 import (
 	"app/entity/model"
-	"app/infra/graph/generated"
 	"context"
 	"fmt"
 )
@@ -29,12 +28,3 @@ func (r *mutationResolver) DeleteRole(ctx context.Context, roleID string) (strin
 func (r *queryResolver) Role(ctx context.Context, roleID string, searchWord string) ([]*model.Role, error) {
 	panic(fmt.Errorf("not implemented: Role - role"))
 }
-
-// Mutation returns generated.MutationResolver implementation.
-func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
-
-// Query returns generated.QueryResolver implementation.
-func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
-
-type mutationResolver struct{ *Resolver }
-type queryResolver struct{ *Resolver }

@@ -1,5 +1,5 @@
 extend type Mutation {
-    createUser(inputUser: InputTeam!):User!
+    createUser(inputUser: InputUser!):User!
     updateUser(updateUser: UpdateUser!):User!
     deleteUser(userId: ID!):Boolan!
 }
@@ -29,5 +29,5 @@ type User {
     userName: String!
     userIcon: String
     email: String!
-    roleId: ID
+    role: Role
 }

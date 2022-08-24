@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS teams (
     team_id INTEGER NOT NULL AUTO_INCREMENT,
     team_name VARCHAR(50) NOT NULL,
     team_icon VARCHAR(127) DEFAULT NULL,
-    team_memos VARCHAR(500) DEFAULT NULL,
+    team_memo VARCHAR(500) DEFAULT NULL,
     start_date  DATE NOT NULL,
     end_date  DATE DEFAULT NULL,
     is_end BOOLEAN NOT NULL DEFAULT 0,

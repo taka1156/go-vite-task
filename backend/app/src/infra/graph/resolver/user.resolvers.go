@@ -4,19 +4,30 @@ package resolver
 // will be copied through when generating and any unknown code will be moved to the end.
 
 import (
+	"app/di"
 	"app/entity/model"
 	"context"
 	"fmt"
 )
 
 // CreateUser is the resolver for the createUser field.
-func (r *mutationResolver) CreateUser(ctx context.Context, inputUser model.InputTeam) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: CreateUser - createUser"))
+func (r *mutationResolver) CreateUser(ctx context.Context, inputUser model.InputUser) (*model.User, error) {
+	user, err := di.Provider().CreateUser.Handle(inputUser)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
 // UpdateUser is the resolver for the updateUser field.
 func (r *mutationResolver) UpdateUser(ctx context.Context, updateUser model.UpdateUser) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: UpdateUser - updateUser"))
+	user, err := di.Provider().UpdateUser.Handle(updateUser)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
 // DeleteUser is the resolver for the deleteUser field.

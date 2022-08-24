@@ -1,11 +1,11 @@
 package main
 
 import (
+	"app/di"
 	"app/infra/server"
-	"app/injecter"
 )
 
 func main() {
-	injecter.Injection()
+	di.Do()
 	server.App()
 }

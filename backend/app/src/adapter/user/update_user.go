@@ -13,7 +13,7 @@ type UpdateUserDependencies struct {
 }
 
 func canSelectRole(userId string) {
-
+	// roleIdが存在するか確認
 }
 
 func (dep UpdateUserDependencies) Do(input model.UpdateUser) (*int, error) {
@@ -25,7 +25,9 @@ func (dep UpdateUserDependencies) Do(input model.UpdateUser) (*int, error) {
 	set
 		user_name = ?
 		email = ?
+		password = ?
 		user_icon = ?
+		role_id = ?
 		update_at = ?
 	where
 		users.user_id = ? and
@@ -38,7 +40,9 @@ func (dep UpdateUserDependencies) Do(input model.UpdateUser) (*int, error) {
 		stmt,
 		input.UserName,
 		input.Email,
+		input.Password,
 		input.UserIcon,
+		input.RoleID,
 		currentTime,
 		input.UserID,
 	)

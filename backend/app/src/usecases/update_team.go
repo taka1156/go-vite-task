@@ -26,6 +26,6 @@ func (dep UpdateTeamDependencies) Handle(input model.UpdateTeam) (*model.Team, e
 	return team, nil
 }
 
-func NewUpdateTeamUsecase(updateTeam UpdateTeamAdapter, getTeam GetTeamAdapter) UpdateTeamInteface {
+func NewUpdateTeamUsecase(updateTeam UpdateTeamAdapter, getTeam GetTeamAdapter) UpdateTeamInterface {
 	return &UpdateTeamDependencies{updateTeam, getTeam}
 }

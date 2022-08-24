@@ -15,13 +15,19 @@ func (dep GetUserDependencies) Do(userId *int) (*model.User, error) {
 
 	stmt := `
 	select 
-		user.user_id,
-		user.user_name,
-		user.email
-		user.user_icon,
-		role_id
+		us.user_id,
+		us.user_name,
+		us.email,
+		us.user_icon,
+		rs.role_id,
+		rs.role_name,
+		rs.role_icon
 	from
-		users
+		users as us
+	inner join
+		roles as rs
+	on
+		rs.role_id = us.role_id
 	where
 		users.user_id = ? and
 
@@ -42,7 +48,9 @@ func (dep GetUserDependencies) Do(userId *int) (*model.User, error) {
 		UserName string
 		Email    string
 		UserIcon sql.NullString
-		RoleID   sql.NullString
+		RoleID   string
+		RoleName string
+		RoleIcon sql.NullString
 	}{}
 
 	rows.Scan(
@@ -51,6 +59,9 @@ func (dep GetUserDependencies) Do(userId *int) (*model.User, error) {
 		&d.Email,
 		&d.UserIcon,
 		&d.RoleID,
+		&d.RoleName,
+		&d.RoleIcon,
+		&d.RoleIcon,
 	)
 
 	blankToNil := func(column sql.NullString) *string {
@@ -65,7 +76,11 @@ func (dep GetUserDependencies) Do(userId *int) (*model.User, error) {
 		UserName: d.UserName,
 		Email:    d.Email,
 		UserIcon: blankToNil(d.UserIcon),
-		RoleID:   blankToNil(d.RoleID),
+		Role: &model.Role{
+			RoleID:   d.RoleID,
+			RoleName: d.RoleName,
+			RoleIcon: blankToNil(d.RoleIcon),
+		},
 	}
 
 	return user, nil

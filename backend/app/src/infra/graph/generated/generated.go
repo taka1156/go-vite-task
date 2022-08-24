@@ -44,17 +44,26 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	Category struct {
+		CategoryID   func(childComplexity int) int
+		CategoryIcon func(childComplexity int) int
+		CategoryName func(childComplexity int) int
+	}
+
 	Mutation struct {
+		CreateCategory  func(childComplexity int, inputCategory model.InputCategory) int
 		CreateRole      func(childComplexity int, inputRole model.InputRole) int
 		CreateTask      func(childComplexity int, inputTask model.InputTask) int
 		CreateTaskState func(childComplexity int, inputTaskState model.InputTaskState) int
 		CreateTeam      func(childComplexity int, inputTeam model.InputTeam) int
-		CreateUser      func(childComplexity int, inputUser model.InputTeam) int
+		CreateUser      func(childComplexity int, inputUser model.InputUser) int
+		DeleteCategory  func(childComplexity int, categoryID string) int
 		DeleteRole      func(childComplexity int, roleID string) int
 		DeleteTask      func(childComplexity int, taskID string) int
 		DeleteTaskState func(childComplexity int, taskStateID string) int
 		DeleteTeam      func(childComplexity int, teamID string) int
 		DeleteUser      func(childComplexity int, userID string) int
+		UpdateCategory  func(childComplexity int, updateCategory model.UpdateCategory) int
 		UpdateRole      func(childComplexity int, updateRole model.UpdateRole) int
 		UpdateTask      func(childComplexity int, updateTask model.UpdateTask) int
 		UpdateTaskState func(childComplexity int, updateTaskState model.UpdateTaskState) int
@@ -63,6 +72,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		Category  func(childComplexity int, categoryID string, searchWord string) int
 		Role      func(childComplexity int, roleID string, searchWord string) int
 		Task      func(childComplexity int, taskID string, searchWord string) int
 		TaskState func(childComplexity int, taskID string, searchWord string) int
@@ -106,7 +116,7 @@ type ComplexityRoot struct {
 
 	User struct {
 		Email    func(childComplexity int) int
-		RoleID   func(childComplexity int) int
+		Role     func(childComplexity int) int
 		UserID   func(childComplexity int) int
 		UserIcon func(childComplexity int) int
 		UserName func(childComplexity int) int
@@ -114,6 +124,9 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
+	CreateCategory(ctx context.Context, inputCategory model.InputCategory) (*model.Category, error)
+	UpdateCategory(ctx context.Context, updateCategory model.UpdateCategory) (*model.Category, error)
+	DeleteCategory(ctx context.Context, categoryID string) (string, error)
 	CreateRole(ctx context.Context, inputRole model.InputRole) (*model.Role, error)
 	UpdateRole(ctx context.Context, updateRole model.UpdateRole) (*model.Role, error)
 	DeleteRole(ctx context.Context, roleID string) (string, error)
@@ -126,11 +139,12 @@ type MutationResolver interface {
 	CreateTeam(ctx context.Context, inputTeam model.InputTeam) (*model.Team, error)
 	UpdateTeam(ctx context.Context, updateTeam model.UpdateTeam) (*model.Team, error)
 	DeleteTeam(ctx context.Context, teamID string) (string, error)
-	CreateUser(ctx context.Context, inputUser model.InputTeam) (*model.User, error)
+	CreateUser(ctx context.Context, inputUser model.InputUser) (*model.User, error)
 	UpdateUser(ctx context.Context, updateUser model.UpdateUser) (*model.User, error)
 	DeleteUser(ctx context.Context, userID string) (string, error)
 }
 type QueryResolver interface {
+	Category(ctx context.Context, categoryID string, searchWord string) ([]*model.Category, error)
 	Role(ctx context.Context, roleID string, searchWord string) ([]*model.Role, error)
 	Task(ctx context.Context, taskID string, searchWord string) ([]*model.Task, error)
 	TaskState(ctx context.Context, taskID string, searchWord string) ([]*model.TaskState, error)
@@ -152,6 +166,39 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "Category.categoryId":
+		if e.complexity.Category.CategoryID == nil {
+			break
+		}
+
+		return e.complexity.Category.CategoryID(childComplexity), true
+
+	case "Category.categoryIcon":
+		if e.complexity.Category.CategoryIcon == nil {
+			break
+		}
+
+		return e.complexity.Category.CategoryIcon(childComplexity), true
+
+	case "Category.categoryName":
+		if e.complexity.Category.CategoryName == nil {
+			break
+		}
+
+		return e.complexity.Category.CategoryName(childComplexity), true
+
+	case "Mutation.createCategory":
+		if e.complexity.Mutation.CreateCategory == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createCategory_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateCategory(childComplexity, args["inputCategory"].(model.InputCategory)), true
 
 	case "Mutation.createRole":
 		if e.complexity.Mutation.CreateRole == nil {
@@ -211,7 +258,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateUser(childComplexity, args["inputUser"].(model.InputTeam)), true
+		return e.complexity.Mutation.CreateUser(childComplexity, args["inputUser"].(model.InputUser)), true
+
+	case "Mutation.deleteCategory":
+		if e.complexity.Mutation.DeleteCategory == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteCategory_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteCategory(childComplexity, args["categoryId"].(string)), true
 
 	case "Mutation.deleteRole":
 		if e.complexity.Mutation.DeleteRole == nil {
@@ -273,6 +332,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DeleteUser(childComplexity, args["userId"].(string)), true
 
+	case "Mutation.updateCategory":
+		if e.complexity.Mutation.UpdateCategory == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateCategory_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateCategory(childComplexity, args["updateCategory"].(model.UpdateCategory)), true
+
 	case "Mutation.updateRole":
 		if e.complexity.Mutation.UpdateRole == nil {
 			break
@@ -332,6 +403,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateUser(childComplexity, args["updateUser"].(model.UpdateUser)), true
+
+	case "Query.category":
+		if e.complexity.Query.Category == nil {
+			break
+		}
+
+		args, err := ec.field_Query_category_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Category(childComplexity, args["categoryId"].(string), args["searchWord"].(string)), true
 
 	case "Query.role":
 		if e.complexity.Query.Role == nil {
@@ -533,12 +616,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.Email(childComplexity), true
 
-	case "User.roleId":
-		if e.complexity.User.RoleID == nil {
+	case "User.role":
+		if e.complexity.User.Role == nil {
 			break
 		}
 
-		return e.complexity.User.RoleID(childComplexity), true
+		return e.complexity.User.Role(childComplexity), true
 
 	case "User.userId":
 		if e.complexity.User.UserID == nil {
@@ -569,11 +652,13 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputInputCategory,
 		ec.unmarshalInputInputRole,
 		ec.unmarshalInputInputTask,
 		ec.unmarshalInputInputTaskState,
 		ec.unmarshalInputInputTeam,
 		ec.unmarshalInputInputUser,
+		ec.unmarshalInputUpdateCategory,
 		ec.unmarshalInputUpdateRole,
 		ec.unmarshalInputUpdateTask,
 		ec.unmarshalInputUpdateTaskState,
@@ -639,6 +724,33 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
+	{Name: "../category.graphqls", Input: `extend type Mutation {
+    createCategory(inputCategory: InputCategory!):Category!
+    updateCategory(updateCategory: UpdateCategory!):Category!
+    deleteCategory(categoryId: ID!):Boolan!
+}
+
+extend type Query {
+    category(categoryId: ID!, searchWord:String!):[Category!]! 
+}
+
+input InputCategory {
+    categoryName: String!
+    categoryIcon: String
+}
+
+input UpdateCategory {
+    categoryId: ID!
+    categoryName: String!
+    categoryIcon: String
+}
+
+type Category {
+    categoryId: ID!
+    categoryName: String!
+    categoryIcon: String
+}
+`, BuiltIn: false},
 	{Name: "../index.graphqls", Input: `scalar Boolan
 scalar Date
 `, BuiltIn: false},
@@ -781,7 +893,7 @@ type Team {
 }
 `, BuiltIn: false},
 	{Name: "../user.graphqls", Input: `extend type Mutation {
-    createUser(inputUser: InputTeam!):User!
+    createUser(inputUser: InputUser!):User!
     updateUser(updateUser: UpdateUser!):User!
     deleteUser(userId: ID!):Boolan!
 }
@@ -802,6 +914,7 @@ input UpdateUser {
     userName: String!
     email: String!
     userIcon: String
+    password: String!
     roleId: ID
 }
 
@@ -810,7 +923,7 @@ type User {
     userName: String!
     userIcon: String
     email: String!
-    roleId: ID
+    role: Role
 }
 `, BuiltIn: false},
 }
@@ -819,6 +932,21 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Mutation_createCategory_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.InputCategory
+	if tmp, ok := rawArgs["inputCategory"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("inputCategory"))
+		arg0, err = ec.unmarshalNInputCategory2appᚋentityᚋmodelᚐInputCategory(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["inputCategory"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Mutation_createRole_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -883,15 +1011,30 @@ func (ec *executionContext) field_Mutation_createTeam_args(ctx context.Context, 
 func (ec *executionContext) field_Mutation_createUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.InputTeam
+	var arg0 model.InputUser
 	if tmp, ok := rawArgs["inputUser"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("inputUser"))
-		arg0, err = ec.unmarshalNInputTeam2appᚋentityᚋmodelᚐInputTeam(ctx, tmp)
+		arg0, err = ec.unmarshalNInputUser2appᚋentityᚋmodelᚐInputUser(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
 	args["inputUser"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteCategory_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["categoryId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryId"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["categoryId"] = arg0
 	return args, nil
 }
 
@@ -967,6 +1110,21 @@ func (ec *executionContext) field_Mutation_deleteUser_args(ctx context.Context, 
 		}
 	}
 	args["userId"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateCategory_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UpdateCategory
+	if tmp, ok := rawArgs["updateCategory"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateCategory"))
+		arg0, err = ec.unmarshalNUpdateCategory2appᚋentityᚋmodelᚐUpdateCategory(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["updateCategory"] = arg0
 	return args, nil
 }
 
@@ -1057,6 +1215,30 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_category_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["categoryId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryId"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["categoryId"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["searchWord"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("searchWord"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["searchWord"] = arg1
 	return args, nil
 }
 
@@ -1208,6 +1390,316 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _Category_categoryId(ctx context.Context, field graphql.CollectedField, obj *model.Category) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Category_categoryId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CategoryID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Category_categoryId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Category",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Category_categoryName(ctx context.Context, field graphql.CollectedField, obj *model.Category) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Category_categoryName(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CategoryName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Category_categoryName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Category",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Category_categoryIcon(ctx context.Context, field graphql.CollectedField, obj *model.Category) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Category_categoryIcon(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CategoryIcon, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Category_categoryIcon(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Category",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createCategory(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createCategory(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateCategory(rctx, fc.Args["inputCategory"].(model.InputCategory))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Category)
+	fc.Result = res
+	return ec.marshalNCategory2ᚖappᚋentityᚋmodelᚐCategory(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createCategory(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "categoryId":
+				return ec.fieldContext_Category_categoryId(ctx, field)
+			case "categoryName":
+				return ec.fieldContext_Category_categoryName(ctx, field)
+			case "categoryIcon":
+				return ec.fieldContext_Category_categoryIcon(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createCategory_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateCategory(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateCategory(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateCategory(rctx, fc.Args["updateCategory"].(model.UpdateCategory))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Category)
+	fc.Result = res
+	return ec.marshalNCategory2ᚖappᚋentityᚋmodelᚐCategory(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateCategory(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "categoryId":
+				return ec.fieldContext_Category_categoryId(ctx, field)
+			case "categoryName":
+				return ec.fieldContext_Category_categoryName(ctx, field)
+			case "categoryIcon":
+				return ec.fieldContext_Category_categoryIcon(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateCategory_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteCategory(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteCategory(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteCategory(rctx, fc.Args["categoryId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNBoolan2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteCategory(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolan does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteCategory_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
 
 func (ec *executionContext) _Mutation_createRole(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_createRole(ctx, field)
@@ -1967,7 +2459,7 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateUser(rctx, fc.Args["inputUser"].(model.InputTeam))
+		return ec.resolvers.Mutation().CreateUser(rctx, fc.Args["inputUser"].(model.InputUser))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2000,8 +2492,8 @@ func (ec *executionContext) fieldContext_Mutation_createUser(ctx context.Context
 				return ec.fieldContext_User_userIcon(ctx, field)
 			case "email":
 				return ec.fieldContext_User_email(ctx, field)
-			case "roleId":
-				return ec.fieldContext_User_roleId(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -2067,8 +2559,8 @@ func (ec *executionContext) fieldContext_Mutation_updateUser(ctx context.Context
 				return ec.fieldContext_User_userIcon(ctx, field)
 			case "email":
 				return ec.fieldContext_User_email(ctx, field)
-			case "roleId":
-				return ec.fieldContext_User_roleId(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -2136,6 +2628,69 @@ func (ec *executionContext) fieldContext_Mutation_deleteUser(ctx context.Context
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_deleteUser_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_category(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_category(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Category(rctx, fc.Args["categoryId"].(string), fc.Args["searchWord"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Category)
+	fc.Result = res
+	return ec.marshalNCategory2ᚕᚖappᚋentityᚋmodelᚐCategoryᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_category(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "categoryId":
+				return ec.fieldContext_Category_categoryId(ctx, field)
+			case "categoryName":
+				return ec.fieldContext_Category_categoryName(ctx, field)
+			case "categoryIcon":
+				return ec.fieldContext_Category_categoryIcon(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_category_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -2451,8 +3006,8 @@ func (ec *executionContext) fieldContext_Query_user(ctx context.Context, field g
 				return ec.fieldContext_User_userIcon(ctx, field)
 			case "email":
 				return ec.fieldContext_User_email(ctx, field)
-			case "roleId":
-				return ec.fieldContext_User_roleId(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -3437,8 +3992,8 @@ func (ec *executionContext) fieldContext_Team_users(ctx context.Context, field g
 				return ec.fieldContext_User_userIcon(ctx, field)
 			case "email":
 				return ec.fieldContext_User_email(ctx, field)
-			case "roleId":
-				return ec.fieldContext_User_roleId(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -3619,8 +4174,8 @@ func (ec *executionContext) fieldContext_User_email(ctx context.Context, field g
 	return fc, nil
 }
 
-func (ec *executionContext) _User_roleId(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_User_roleId(ctx, field)
+func (ec *executionContext) _User_role(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_role(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -3633,7 +4188,7 @@ func (ec *executionContext) _User_roleId(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.RoleID, nil
+		return obj.Role, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3642,19 +4197,27 @@ func (ec *executionContext) _User_roleId(ctx context.Context, field graphql.Coll
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(*model.Role)
 	fc.Result = res
-	return ec.marshalOID2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalORole2ᚖappᚋentityᚋmodelᚐRole(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_User_roleId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_User_role(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "User",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type ID does not have child fields")
+			switch field.Name {
+			case "roleId":
+				return ec.fieldContext_Role_roleId(ctx, field)
+			case "roleName":
+				return ec.fieldContext_Role_roleName(ctx, field)
+			case "roleIcon":
+				return ec.fieldContext_Role_roleIcon(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Role", field.Name)
 		},
 	}
 	return fc, nil
@@ -5433,6 +5996,42 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputInputCategory(ctx context.Context, obj interface{}) (model.InputCategory, error) {
+	var it model.InputCategory
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"categoryName", "categoryIcon"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "categoryName":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryName"))
+			it.CategoryName, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "categoryIcon":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryIcon"))
+			it.CategoryIcon, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputInputRole(ctx context.Context, obj interface{}) (model.InputRole, error) {
 	var it model.InputRole
 	asMap := map[string]interface{}{}
@@ -5709,6 +6308,50 @@ func (ec *executionContext) unmarshalInputInputUser(ctx context.Context, obj int
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateCategory(ctx context.Context, obj interface{}) (model.UpdateCategory, error) {
+	var it model.UpdateCategory
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"categoryId", "categoryName", "categoryIcon"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "categoryId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryId"))
+			it.CategoryID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "categoryName":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryName"))
+			it.CategoryName, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "categoryIcon":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryIcon"))
+			it.CategoryIcon, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateRole(ctx context.Context, obj interface{}) (model.UpdateRole, error) {
 	var it model.UpdateRole
 	asMap := map[string]interface{}{}
@@ -5972,7 +6615,7 @@ func (ec *executionContext) unmarshalInputUpdateUser(ctx context.Context, obj in
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"userId", "userName", "email", "userIcon", "roleId"}
+	fieldsInOrder := [...]string{"userId", "userName", "email", "userIcon", "password", "roleId"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -6011,6 +6654,14 @@ func (ec *executionContext) unmarshalInputUpdateUser(ctx context.Context, obj in
 			if err != nil {
 				return it, err
 			}
+		case "password":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
+			it.Password, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "roleId":
 			var err error
 
@@ -6033,6 +6684,45 @@ func (ec *executionContext) unmarshalInputUpdateUser(ctx context.Context, obj in
 
 // region    **************************** object.gotpl ****************************
 
+var categoryImplementors = []string{"Category"}
+
+func (ec *executionContext) _Category(ctx context.Context, sel ast.SelectionSet, obj *model.Category) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, categoryImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Category")
+		case "categoryId":
+
+			out.Values[i] = ec._Category_categoryId(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "categoryName":
+
+			out.Values[i] = ec._Category_categoryName(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "categoryIcon":
+
+			out.Values[i] = ec._Category_categoryIcon(ctx, field, obj)
+
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -6052,6 +6742,33 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
+		case "createCategory":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createCategory(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateCategory":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateCategory(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deleteCategory":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteCategory(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "createRole":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
@@ -6217,6 +6934,29 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
+		case "category":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_category(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
 		case "role":
 			field := field
 
@@ -6610,9 +7350,9 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "roleId":
+		case "role":
 
-			out.Values[i] = ec._User_roleId(ctx, field, obj)
+			out.Values[i] = ec._User_role(ctx, field, obj)
 
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -6973,6 +7713,64 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) marshalNCategory2appᚋentityᚋmodelᚐCategory(ctx context.Context, sel ast.SelectionSet, v model.Category) graphql.Marshaler {
+	return ec._Category(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCategory2ᚕᚖappᚋentityᚋmodelᚐCategoryᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Category) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCategory2ᚖappᚋentityᚋmodelᚐCategory(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNCategory2ᚖappᚋentityᚋmodelᚐCategory(ctx context.Context, sel ast.SelectionSet, v *model.Category) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Category(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNDate2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -7035,6 +7833,11 @@ func (ec *executionContext) marshalNID2ᚕstringᚄ(ctx context.Context, sel ast
 	return ret
 }
 
+func (ec *executionContext) unmarshalNInputCategory2appᚋentityᚋmodelᚐInputCategory(ctx context.Context, v interface{}) (model.InputCategory, error) {
+	res, err := ec.unmarshalInputInputCategory(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNInputRole2appᚋentityᚋmodelᚐInputRole(ctx context.Context, v interface{}) (model.InputRole, error) {
 	res, err := ec.unmarshalInputInputRole(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -7052,6 +7855,11 @@ func (ec *executionContext) unmarshalNInputTaskState2appᚋentityᚋmodelᚐInpu
 
 func (ec *executionContext) unmarshalNInputTeam2appᚋentityᚋmodelᚐInputTeam(ctx context.Context, v interface{}) (model.InputTeam, error) {
 	res, err := ec.unmarshalInputInputTeam(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNInputUser2appᚋentityᚋmodelᚐInputUser(ctx context.Context, v interface{}) (model.InputUser, error) {
+	res, err := ec.unmarshalInputInputUser(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -7325,6 +8133,11 @@ func (ec *executionContext) marshalNTeam2ᚖappᚋentityᚋmodelᚐTeam(ctx cont
 		return graphql.Null
 	}
 	return ec._Team(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNUpdateCategory2appᚋentityᚋmodelᚐUpdateCategory(ctx context.Context, v interface{}) (model.UpdateCategory, error) {
+	res, err := ec.unmarshalInputUpdateCategory(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNUpdateRole2appᚋentityᚋmodelᚐUpdateRole(ctx context.Context, v interface{}) (model.UpdateRole, error) {
@@ -7703,6 +8516,13 @@ func (ec *executionContext) marshalOID2ᚖstring(ctx context.Context, sel ast.Se
 	}
 	res := graphql.MarshalID(*v)
 	return res
+}
+
+func (ec *executionContext) marshalORole2ᚖappᚋentityᚋmodelᚐRole(ctx context.Context, sel ast.SelectionSet, v *model.Role) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Role(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
