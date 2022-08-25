@@ -1,5 +1,5 @@
 dev:
-	go run src/main.go
+	go run main.go
 
 mig-help:
 	sql-migrate --help

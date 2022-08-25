@@ -4,12 +4,10 @@ import (
 	"app/entity/model"
 	"app/infra/database"
 	"app/usecases"
-	"strconv"
-	"time"
 )
 
 type UpdateUserDependencies struct {
-	sqlAdapter *database.SqlAdapter
+	gormAdapter *database.GormAdapter
 }
 
 func canSelectRole(userId string) {
@@ -17,47 +15,29 @@ func canSelectRole(userId string) {
 }
 
 func (dep UpdateUserDependencies) Do(input model.UpdateUser) (*int, error) {
-	currentTime := time.Now()
+	// currentTime := time.Now()
 
-	stmt := `
-	update
-		users
-	set
-		user_name = ?
-		email = ?
-		password = ?
-		user_icon = ?
-		role_id = ?
-		update_at = ?
-	where
-		users.user_id = ? and
+	// stmt := `
+	// update
+	// 	users
+	// set
+	// 	user_name = ?
+	// 	email = ?
+	// 	password = ?
+	// 	user_icon = ?
+	// 	role_id = ?
+	// 	update_at = ?
+	// where
+	// 	users.user_id = ? and
 
-		users.deleted_at is null
-	`
-	defer dep.sqlAdapter.DB.Close()
+	// 	users.deleted_at is null
+	// `
 
-	_, err := dep.sqlAdapter.DB.Exec(
-		stmt,
-		input.UserName,
-		input.Email,
-		input.Password,
-		input.UserIcon,
-		input.RoleID,
-		currentTime,
-		input.UserID,
-	)
-	if err != nil {
-		return nil, err
-	}
+	id := 1
 
-	castUserId, err := strconv.Atoi(input.UserID)
-	if err != nil {
-		return nil, err
-	}
-
-	return &castUserId, nil
+	return &id, nil
 }
 
-func NewUpdateUserAdapter(sqlAdapter *database.SqlAdapter) usecases.UpdateUserAdapter {
-	return &UpdateUserDependencies{sqlAdapter}
+func NewUpdateUserAdapter(gormAdapter *database.GormAdapter) usecases.UpdateUserAdapter {
+	return &UpdateUserDependencies{gormAdapter}
 }

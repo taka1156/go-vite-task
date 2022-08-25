@@ -1,45 +1,40 @@
 package database
 
 import (
-	"app/envars"
-	"database/sql"
+	"app/envvars"
 	"fmt"
 
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/labstack/gommon/log"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
-type SqlAdapter struct {
-	DB *sql.DB
+type GormAdapter struct {
+	DB *gorm.DB
 }
 
-func isErr(err error) bool {
-	if err != nil {
-		fmt.Println(err)
-		return true
-	}
-	return false
-}
-
-func DbInit() *SqlAdapter {
-	// "user:password@tcp(db:3306)/sample?"
+func GormInit(DbEnv envvars.DbSetting) *GormAdapter {
 	dbSetting := fmt.Sprintf(
 		"%s:%s@tcp(%s)/%s?charset=%s&collation=%s&parseTime=%s",
-		envars.DbEnv.DB_USER,
-		envars.DbEnv.DB_PASSWORD,
-		envars.DbEnv.DB_PORT,
-		envars.DbEnv.DB_DATABASE,
-		envars.DbEnv.CHARSET,
-		envars.DbEnv.COLLATION,
-		envars.DbEnv.PARSETIME,
+		DbEnv.DB_USER,
+		DbEnv.DB_PASSWORD,
+		DbEnv.DB_PORT,
+		DbEnv.DB_NAME,
+		DbEnv.DB_CHARSET,
+		DbEnv.DB_COLLATION,
+		DbEnv.DB_PARSETIME,
 	)
-	db, err := sql.Open(envars.DbEnv.DB_NAME, dbSetting)
+
+	log.Info(dbSetting)
+
+	db, err := gorm.Open(mysql.Open(dbSetting), &gorm.Config{})
 	if err != nil {
 		panic(err.Error)
 	}
 
-	sqlAdapter := new(SqlAdapter)
+	gormAdapter := new(GormAdapter)
 
-	sqlAdapter.DB = db
+	gormAdapter.DB = db
 
-	return sqlAdapter
+	return gormAdapter
 }

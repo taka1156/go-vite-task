@@ -5,10 +5,10 @@ CREATE TABLE IF NOT EXISTS users (
     user_name VARCHAR(50) NOT NULL,
     email VARCHAR(127) NOT NULL UNIQUE,
     password VARCHAR(127) NOT NULL,
-    role_id INTEGER NOT NULL,
-    created_at DATE NOT NULL,
-    updated_at DATE DEFAULT NULL,
-    deleted_at DATE DEFAULT NULL,
+    role_id INTEGER DEFAULT NULL,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME DEFAULT NULL,
+    deleted_at DATETIME DEFAULT NULL,
     PRIMARY KEY (user_id),
     FOREIGN KEY role_index(role_id) REFERENCES roles(role_id)
 );

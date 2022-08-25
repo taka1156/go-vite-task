@@ -7,9 +7,9 @@ CREATE TABLE IF NOT EXISTS teams (
     start_date  DATE NOT NULL,
     end_date  DATE DEFAULT NULL,
     is_end BOOLEAN NOT NULL DEFAULT 0,
-    created_at DATE NOT NULL,
-    updated_at DATE DEFAULT NULL,
-    deleted_at DATE DEFAULT NULL,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME DEFAULT NULL,
+    deleted_at DATETIME DEFAULT NULL,
     PRIMARY KEY (team_id)
 );
 

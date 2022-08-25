@@ -2,6 +2,7 @@ package di
 
 import (
 	"app/adapter/user"
+	"app/envvars"
 	"app/infra/database"
 	"app/usecases"
 )
@@ -23,13 +24,16 @@ var adapter Adapter
 
 func Do() {
 
+	// Env
+	envvars.EnvLoad()
+
 	// Infrastructure
-	sqlAdapter := database.DbInit()
+	gormAdapter := database.GormInit(envvars.DbEnv)
 
 	// Adapter
-	createUserAdapter := user.NewCreateUserAdapter(sqlAdapter)
-	getUserAdapter := user.NewGetUserAdapter(sqlAdapter)
-	updateUserAdapter := user.NewUpdateUserAdapter(sqlAdapter)
+	createUserAdapter := user.NewCreateUserAdapter(gormAdapter)
+	getUserAdapter := user.NewGetUserAdapter(gormAdapter)
+	updateUserAdapter := user.NewUpdateUserAdapter(gormAdapter)
 
 	// Usecase
 	createUserUsecase := usecases.NewCreateUserUsecase(createUserAdapter, getUserAdapter)

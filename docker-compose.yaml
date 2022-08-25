@@ -2,25 +2,25 @@ version: '3'
 
 services:
   frontend:
-    build: ./node
+    build: .docker/node
     ports:
       - '3000:3000'
     tty: true
     volumes:
-      - ../frontend:/frontend
+      - ./frontend:/frontend
 
   backend:
-    build: ./golang
+    build: .docker/golang
     tty: true
     ports:
       - 8080:8080
     depends_on:
       - db
     volumes:
-      - ../backend/app:/go/src/app
+      - ./backend/app:/go/src/app
 
   db:
-    build: ./mysql
+    build: .docker/mysql
     environment:
       - MYSQL_DATABASE=sample
       - MYSQL_USER=user
@@ -30,7 +30,7 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - ./db:/var/lib/mysql
+      - .docker/db:/var/lib/mysql
 
 volumes:
     db: {}

@@ -1,7 +1,8 @@
 package user
 
 import (
-	"app/adapter/auth"
+	"app/entity/convert"
+	"app/entity/gmodel"
 	"app/entity/model"
 	"app/infra/database"
 	"app/usecases"
@@ -9,44 +10,29 @@ import (
 )
 
 type CreateUserDependencies struct {
-	sqlAdapter *database.SqlAdapter
+	gormAdapter *database.GormAdapter
 }
 
 func (dep CreateUserDependencies) Do(input model.InputUser) (*int, error) {
 	currentTime := time.Now()
 
-	stmt := `
-		insert into users
-			(user_name, email, user_icon, password, created_at, update_at)
-		values
-			(?, ?, ?, ?, ?, ?, ?)
-	`
-	defer dep.sqlAdapter.DB.Close()
-
-	hashPass := auth.HashMd5(input.Password)
-	result, err := dep.sqlAdapter.DB.Exec(
-		stmt,
-		input.UserName,
-		input.Email,
-		input.UserIcon,
-		hashPass,
-		currentTime,
-		currentTime,
-	)
-	if err != nil {
-		return nil, err
+	user := &gmodel.User{
+		UserName:  input.UserName,
+		Email:     input.Email,
+		UserIcon:  input.UserIcon,
+		Password:  input.Password,
+		RoleID:    1,
+		CreatedAt: currentTime,
+		UpdatedAt: currentTime,
 	}
 
-	lastInsertId, err := result.LastInsertId()
-	if err != nil {
-		return nil, err
-	}
+	dep.gormAdapter.DB.Create(&user)
 
-	castUserId := int(lastInsertId)
+	insertId := convert.Id_Uint(user.UserID)
 
-	return &castUserId, nil
+	return &insertId, nil
 }
 
-func NewCreateUserAdapter(sqlAdapter *database.SqlAdapter) usecases.CreateUserAdapter {
-	return &CreateUserDependencies{sqlAdapter}
+func NewCreateUserAdapter(gormAdapter *database.GormAdapter) usecases.CreateUserAdapter {
+	return &CreateUserDependencies{gormAdapter}
 }

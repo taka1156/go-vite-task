@@ -4,88 +4,52 @@ import (
 	"app/entity/model"
 	"app/infra/database"
 	"app/usecases"
-	"database/sql"
 )
 
 type GetUserDependencies struct {
-	sqlAdapter *database.SqlAdapter
+	gormAdapter *database.GormAdapter
 }
 
 func (dep GetUserDependencies) Do(userId *int) (*model.User, error) {
 
-	stmt := `
-	select 
-		us.user_id,
-		us.user_name,
-		us.email,
-		us.user_icon,
-		rs.role_id,
-		rs.role_name,
-		rs.role_icon
-	from
-		users as us
-	inner join
-		roles as rs
-	on
-		rs.role_id = us.role_id
-	where
-		users.user_id = ? and
-
-		user.deleted_at is null
-	`
-	defer dep.sqlAdapter.DB.Close()
-
-	rows, err := dep.sqlAdapter.DB.Query(stmt, userId)
-
-	if err != nil {
-		return nil, err
-	}
-
-	rows.Next()
-
-	d := struct {
+	result := struct {
 		UserID   string
-		UserName string
 		Email    string
-		UserIcon sql.NullString
+		UserName string
+		UserIcon *string
 		RoleID   string
 		RoleName string
-		RoleIcon sql.NullString
+		RoleIcon *string
 	}{}
 
-	rows.Scan(
-		&d.UserID,
-		&d.UserName,
-		&d.Email,
-		&d.UserIcon,
-		&d.RoleID,
-		&d.RoleName,
-		&d.RoleIcon,
-		&d.RoleIcon,
-	)
+	dep.gormAdapter.DB.
+		Table("users").
+		Select(`users.user_id,
+		        users.user_name,
+				users.user_icon,
+				users.email,
+				roles.role_id,
+				roles.role_name,
+				roles.role_icon`,
+		).
+		Joins("LEFT OUTER JOIN roles ON roles.role_id = users.role_id").
+		Where("users.user_id = ?", userId).Scan(&result)
 
-	blankToNil := func(column sql.NullString) *string {
-		if column.Valid {
-			return &column.String
-		}
-		return nil
-	}
-
-	user := &model.User{
-		UserID:   d.UserID,
-		UserName: d.UserName,
-		Email:    d.Email,
-		UserIcon: blankToNil(d.UserIcon),
+	getUser := &model.User{
+		UserID:   result.UserID,
+		UserName: result.UserName,
+		UserIcon: result.UserIcon,
+		Email:    result.Email,
 		Role: &model.Role{
-			RoleID:   d.RoleID,
-			RoleName: d.RoleName,
-			RoleIcon: blankToNil(d.RoleIcon),
+			RoleID:   result.RoleID,
+			RoleName: result.RoleName,
+			RoleIcon: result.RoleIcon,
 		},
 	}
 
-	return user, nil
+	return getUser, nil
 }
 
-func NewGetUserAdapter(sqlAdapter *database.SqlAdapter) usecases.GetUserAdapter {
-	return &GetUserDependencies{sqlAdapter}
+func NewGetUserAdapter(gormAdapter *database.GormAdapter) usecases.GetUserAdapter {
+	return &GetUserDependencies{gormAdapter}
 }

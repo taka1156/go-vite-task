@@ -1,7 +1,7 @@
 package server
 
 import (
-	"app/envars"
+	"app/envvars"
 	"app/infra/graph/generated"
 	"app/infra/graph/resolver"
 	"log"
@@ -13,7 +13,7 @@ import (
 )
 
 func App() {
-	var PORT = envars.ServerEnv.PORT
+	var PORT = envvars.ServerEnv.PORT
 
 	e := echo.New()
 

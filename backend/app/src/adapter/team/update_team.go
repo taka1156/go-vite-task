@@ -7,7 +7,7 @@ import (
 )
 
 type UpdateTeamDependencies struct {
-	sqlAdapter *database.SqlAdapter
+	gormAdapter *database.GormAdapter
 }
 
 func (dep UpdateTeamDependencies) Do(input model.UpdateTeam) (*int, error) {
@@ -18,6 +18,6 @@ func (dep UpdateTeamDependencies) Do(input model.UpdateTeam) (*int, error) {
 	return &updateTeamId, nil
 }
 
-func NewUpdateTeamAdapter(sqlAdapter *database.SqlAdapter) usecases.UpdateTeamAdapter {
-	return &UpdateTeamDependencies{sqlAdapter}
+func NewUpdateTeamAdapter(gormAdapter *database.GormAdapter) usecases.UpdateTeamAdapter {
+	return &UpdateTeamDependencies{gormAdapter}
 }

@@ -6,7 +6,7 @@ RUN apk add alpine-sdk
 
 ENV GO111MODULE=on
 
-WORKDIR /go/src/app
-
-RUN go get github.com/99designs/gqlgen
+RUN go install github.com/99designs/gqlgen@latest
 RUN go install github.com/rubenv/sql-migrate/...@latest
+
+WORKDIR /go/src/app
