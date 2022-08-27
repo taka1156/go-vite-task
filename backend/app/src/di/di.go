@@ -1,7 +1,7 @@
 package di
 
 import (
-	"app/adapter/user"
+	"app/adapters/user"
 	"app/envvars"
 	"app/infra/database"
 	"app/usecases"

@@ -28,7 +28,7 @@ func (dep CreateUserDependencies) Do(input model.InputUser) (*int, error) {
 
 	dep.gormAdapter.DB.Create(&user)
 
-	insertId := convert.Id_Uint(user.UserID)
+	insertId := convert.Id_Utoi(user.UserID)
 
 	return &insertId, nil
 }

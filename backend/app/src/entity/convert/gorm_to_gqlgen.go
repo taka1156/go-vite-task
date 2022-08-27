@@ -19,6 +19,6 @@ func Id_Itoa(id uint) string {
 	return castId
 }
 
-func Id_Uint(id uint) int {
+func Id_Utoi(id uint) int {
 	return int(id)
 }
