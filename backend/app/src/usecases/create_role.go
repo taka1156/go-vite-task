@@ -3,7 +3,7 @@ package usecases
 import "app/entity/model"
 
 type CreateRoleAdapter interface {
-	Do(inputRole model.InputRole) (*int, error)
+	Do(inputRole model.InputRole) (*uint, error)
 }
 
 type CreateRoleDependencies struct {

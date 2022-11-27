@@ -7,10 +7,10 @@ import (
 )
 
 type CreateTeamDependencies struct {
-	gormAdapter *database.GormAdapter
+	sqlAdapter *database.SqlAdapter
 }
 
-func (dep CreateTeamDependencies) Do(input model.InputTeam) (*int, error) {
+func (dep CreateTeamDependencies) Do(input model.InputTeam) (*uint, error) {
 	// currentTime := time.Now()
 
 	// stmt_teams := `
@@ -27,11 +27,11 @@ func (dep CreateTeamDependencies) Do(input model.InputTeam) (*int, error) {
 	// 	(?, ?, ?, ?)
 	// `
 
-	id := 1
+	id := uint(1)
 
 	return &id, nil
 }
 
-func NewCreateTeamAdapter(gormAdapter *database.GormAdapter) usecases.CreateTeamAdapter {
-	return &CreateTeamDependencies{gormAdapter}
+func NewCreateTeamAdapter(sqlAdapter *database.SqlAdapter) usecases.CreateTeamAdapter {
+	return &CreateTeamDependencies{sqlAdapter}
 }

@@ -2,54 +2,44 @@ package user
 
 import (
 	"app/entity/model"
+	"app/entity/model/xo"
 	"app/infra/database"
 	"app/usecases"
+	"context"
+	"strconv"
 )
 
 type GetUserDependencies struct {
-	gormAdapter *database.GormAdapter
+	sqlAdapter *database.SqlAdapter
 }
 
 func (dep GetUserDependencies) Do(userId *int) (*model.User, error) {
 
-	result := struct {
-		UserID   string
-		Email    string
-		UserName string
-		UserIcon *string
-		RoleID   string
-		RoleName string
-		RoleIcon *string
-	}{}
+	user, err := xo.UserByUserID(context.TODO(), dep.sqlAdapter.DB, *userId)
+	if err != nil {
+		return nil, err
+	}
 
-	dep.gormAdapter.DB.
-		Table("users").
-		Select(`users.user_id,
-		        users.user_name,
-				users.user_icon,
-				users.email,
-				roles.role_id,
-				roles.role_name,
-				roles.role_icon`,
-		).
-		Joins("LEFT OUTER JOIN roles ON roles.role_id = users.role_id").
-		Where("users.user_id = ?", userId).Scan(&result)
+	role, err := xo.RoleByRoleID(context.TODO(), dep.sqlAdapter.DB, int(user.RoleID.Int64))
+	if err != nil {
+		return nil, err
+	}
 
 	getUser := &model.User{
-		UserID:   result.UserID,
-		UserName: result.UserName,
-		UserIcon: result.UserIcon,
-		Email:    result.Email,
+		UserID:   strconv.Itoa(user.UserID),
+		UserName: user.UserName,
+		UserIcon: &user.UserIcon.String,
+		Email:    user.Email,
 		Role: &model.Role{
-			RoleID:   result.RoleID,
-			RoleName: result.RoleName,
-			RoleIcon: result.RoleIcon,
+			RoleID:   strconv.Itoa(role.RoleID),
+			RoleName: role.RoleName,
+			RoleIcon: &role.RoleIcon.String,
 		},
 	}
 
 	return getUser, nil
 }
 
-func NewGetUserAdapter(gormAdapter *database.GormAdapter) usecases.GetUserAdapter {
-	return &GetUserDependencies{gormAdapter}
+func NewGetUserAdapter(sqlAdapter *database.SqlAdapter) usecases.GetUserAdapter {
+	return &GetUserDependencies{sqlAdapter}
 }

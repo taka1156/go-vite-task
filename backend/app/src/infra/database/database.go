@@ -2,18 +2,19 @@ package database
 
 import (
 	"app/envvars"
+	"database/sql"
 	"fmt"
 
 	"github.com/labstack/gommon/log"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 )
 
-type GormAdapter struct {
-	DB *gorm.DB
+type SqlAdapter struct {
+	DB *sql.DB
 }
 
-func GormInit(DbEnv envvars.DbSetting) *GormAdapter {
+var SQL = &SqlAdapter{}
+
+func DBInit(DbEnv envvars.DbSetting) *SqlAdapter {
 	dbSetting := fmt.Sprintf(
 		"%s:%s@tcp(%s)/%s?charset=%s&collation=%s&parseTime=%s",
 		DbEnv.DB_USER,
@@ -27,14 +28,12 @@ func GormInit(DbEnv envvars.DbSetting) *GormAdapter {
 
 	log.Info(dbSetting)
 
-	db, err := gorm.Open(mysql.Open(dbSetting), &gorm.Config{})
+	db, err := sql.Open("mysql", dbSetting)
 	if err != nil {
 		panic(err.Error)
 	}
 
-	gormAdapter := new(GormAdapter)
+	SQL.DB = db
 
-	gormAdapter.DB = db
-
-	return gormAdapter
+	return SQL
 }

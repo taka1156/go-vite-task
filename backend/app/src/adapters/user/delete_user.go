@@ -1,42 +1,32 @@
 package user
 
 import (
+	"app/entity/model/xo"
 	"app/infra/database"
 	"app/usecases"
+	"context"
 )
 
 type DeleteUserDependencies struct {
-	gormAdapter *database.GormAdapter
+	sqlAdapter *database.SqlAdapter
 }
 
-func (dep DeleteUserDependencies) Do(userId int) (*bool, error) {
+func (dep DeleteUserDependencies) Do(userId int) (bool, error) {
 
-	// stmt := `
-	// select
-	// 	us.user_id,
-	// 	us.user_name,
-	// 	us.email,
-	// 	us.user_icon,
-	// 	rs.role_id,
-	// 	rs.role_name,
-	// 	rs.role_icon
-	// from
-	// 	users as us
-	// inner join
-	// 	roles as rs
-	// on
-	// 	rs.role_id = us.role_id
-	// where
-	// 	users.user_id = ? and
+	user := xo.User{
+		UserID: userId,
+	}
 
-	// 	user.deleted_at is null
-	// `
+	err := user.Delete(context.TODO(), dep.sqlAdapter.DB)
+	if err != nil {
+		return false, err
+	}
 
-	isDelete := false
+	isDeleted := true
 
-	return &isDelete, nil
+	return isDeleted, nil
 }
 
-func NewDeleteUserAdapter(gormAdapter *database.GormAdapter) usecases.DeleteUserAdapter {
-	return &DeleteUserDependencies{gormAdapter}
+func NewDeleteUserAdapter(sqlAdapter *database.SqlAdapter) usecases.DeleteUserAdapter {
+	return &DeleteUserDependencies{sqlAdapter}
 }

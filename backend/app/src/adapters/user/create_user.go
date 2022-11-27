@@ -1,38 +1,43 @@
 package user
 
 import (
-	"app/entity/convert"
-	"app/entity/gmodel"
 	"app/entity/model"
+	"app/entity/model/xo"
 	"app/infra/database"
 	"app/usecases"
+	"context"
+	"database/sql"
 	"time"
 )
 
 type CreateUserDependencies struct {
-	gormAdapter *database.GormAdapter
+	sqlAdapter *database.SqlAdapter
 }
 
 func (dep CreateUserDependencies) Do(input model.InputUser) (*int, error) {
 	currentTime := time.Now()
 
-	user := &gmodel.User{
+	roleId := 1
+	user := &xo.User{
 		UserName:  input.UserName,
 		Email:     input.Email,
-		UserIcon:  input.UserIcon,
+		UserIcon:  sql.NullString{String: *input.UserIcon},
 		Password:  input.Password,
-		RoleID:    1,
+		RoleID:    sql.NullInt64{Int64: int64(roleId)},
 		CreatedAt: currentTime,
-		UpdatedAt: currentTime,
+		UpdatedAt: sql.NullTime{Time: currentTime},
 	}
 
-	dep.gormAdapter.DB.Create(&user)
+	err := user.Insert(context.TODO(), dep.sqlAdapter.DB)
+	if err != nil {
+		return nil, err
+	}
 
-	insertId := convert.Id_Utoi(user.UserID)
+	createUserId := int(user.UserID)
 
-	return &insertId, nil
+	return &createUserId, nil
 }
 
-func NewCreateUserAdapter(gormAdapter *database.GormAdapter) usecases.CreateUserAdapter {
-	return &CreateUserDependencies{gormAdapter}
+func NewCreateUserAdapter(sqlAdapter *database.SqlAdapter) usecases.CreateUserAdapter {
+	return &CreateUserDependencies{sqlAdapter}
 }

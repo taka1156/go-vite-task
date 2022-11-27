@@ -16,7 +16,7 @@ type UpdateUserInteface interface {
 }
 
 type DeleteUserInterface interface {
-	Handle(userId int) (*bool, error)
+	Handle(userId int) (bool, error)
 }
 
 // team

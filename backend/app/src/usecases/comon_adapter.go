@@ -9,19 +9,19 @@ type GetUserAdapter interface {
 
 // team
 type GetTeamAdapter interface {
-	Do(teamId *int) (*model.Team, error)
+	Do(teamId *uint) (*model.Team, error)
 }
 
 type GetTeamUsersAdapter interface {
-	Do(teamId *int) ([]*model.User, error)
+	Do(teamId *uint) ([]*model.User, error)
 }
 
 // category
 type GetCategoryAdapter interface {
-	Do(teamId *int) (*model.Category, error)
+	Do(teamId *uint) (*model.Category, error)
 }
 
 // role
 type GetRoleAdapter interface {
-	Do(teamId *int) (*model.Role, error)
+	Do(teamId *uint) (*model.Role, error)
 }

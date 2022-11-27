@@ -7,17 +7,17 @@ import (
 )
 
 type UpdateTeamDependencies struct {
-	gormAdapter *database.GormAdapter
+	sqlAdapter *database.SqlAdapter
 }
 
-func (dep UpdateTeamDependencies) Do(input model.UpdateTeam) (*int, error) {
+func (dep UpdateTeamDependencies) Do(input model.UpdateTeam) (*uint, error) {
 	//currentTime := time.Now()
 
-	updateTeamId := 1
+	updateTeamId := uint(1)
 
 	return &updateTeamId, nil
 }
 
-func NewUpdateTeamAdapter(gormAdapter *database.GormAdapter) usecases.UpdateTeamAdapter {
-	return &UpdateTeamDependencies{gormAdapter}
+func NewUpdateTeamAdapter(sqlAdapter *database.SqlAdapter) usecases.UpdateTeamAdapter {
+	return &UpdateTeamDependencies{sqlAdapter}
 }

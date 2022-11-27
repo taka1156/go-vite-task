@@ -3,7 +3,7 @@ package usecases
 import "app/entity/model"
 
 type CreateTeamAdapter interface {
-	Do(user model.InputTeam) (*int, error)
+	Do(user model.InputTeam) (*uint, error)
 }
 
 type CreateTeamDependencies struct {

@@ -7,7 +7,7 @@ import (
 )
 
 type GetTeamsDependencies struct {
-	gormAdapter *database.GormAdapter
+	sqlAdapter *database.SqlAdapter
 }
 
 func (dep GetTeamsDependencies) Do() ([]*model.Team, error) {
@@ -17,6 +17,6 @@ func (dep GetTeamsDependencies) Do() ([]*model.Team, error) {
 	return teams, nil
 }
 
-func NewGetTeamsAdapter(gormAdapter *database.GormAdapter) usecases.GetTeamsAdapter {
-	return &GetTeamsDependencies{gormAdapter}
+func NewGetTeamsAdapter(sqlAdapter *database.SqlAdapter) usecases.GetTeamsAdapter {
+	return &GetTeamsDependencies{sqlAdapter}
 }

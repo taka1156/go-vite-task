@@ -5,7 +5,7 @@ import (
 )
 
 type UpdateTeamAdapter interface {
-	Do(input model.UpdateTeam) (*int, error)
+	Do(input model.UpdateTeam) (*uint, error)
 }
 
 type UpdateTeamDependencies struct {

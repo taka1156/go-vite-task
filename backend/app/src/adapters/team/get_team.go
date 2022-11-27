@@ -7,10 +7,10 @@ import (
 )
 
 type GetTeamDependencies struct {
-	gormAdapter *database.GormAdapter
+	sqlAdapter *database.SqlAdapter
 }
 
-func (dep GetTeamDependencies) Do(teamId *int) (*model.Team, error) {
+func (dep GetTeamDependencies) Do(teamId *uint) (*model.Team, error) {
 
 	// stmt := `
 	// select
@@ -35,6 +35,6 @@ func (dep GetTeamDependencies) Do(teamId *int) (*model.Team, error) {
 	return &model.Team{}, nil
 }
 
-func NewGetTeamAdapter(gormAdapter *database.GormAdapter) usecases.GetTeamAdapter {
-	return &GetTeamDependencies{gormAdapter}
+func NewGetTeamAdapter(sqlAdapter *database.SqlAdapter) usecases.GetTeamAdapter {
+	return &GetTeamDependencies{sqlAdapter}
 }

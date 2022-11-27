@@ -5,7 +5,7 @@ import (
 )
 
 type CreateCategoryAdapter interface {
-	Do(input model.InputCategory) (*int, error)
+	Do(input model.InputCategory) (*uint, error)
 }
 
 type CreateCategoryDependencies struct {

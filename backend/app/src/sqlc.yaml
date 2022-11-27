@@ -1,0 +1,9 @@
+version: "2"
+sql:
+- schema: "./schemas"
+  queries: "query.sql"
+  engine: "mysql"
+  gen:
+    go:
+      package: "model"
+      out: "./entity/model"

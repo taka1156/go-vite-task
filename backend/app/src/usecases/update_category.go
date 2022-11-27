@@ -5,7 +5,7 @@ import (
 )
 
 type UpdateCategoryAdapter interface {
-	Do(updateInput model.UpdateCategory) (*int, error)
+	Do(updateInput model.UpdateCategory) (*uint, error)
 }
 
 type UpdateCategoryDependencies struct {

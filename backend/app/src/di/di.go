@@ -28,12 +28,12 @@ func Do() {
 	envvars.EnvLoad()
 
 	// Infrastructure
-	gormAdapter := database.GormInit(envvars.DbEnv)
+	dbAdapter := database.DBInit(envvars.DbEnv)
 
 	// Adapter
-	createUserAdapter := user.NewCreateUserAdapter(gormAdapter)
-	getUserAdapter := user.NewGetUserAdapter(gormAdapter)
-	updateUserAdapter := user.NewUpdateUserAdapter(gormAdapter)
+	createUserAdapter := user.NewCreateUserAdapter(dbAdapter)
+	getUserAdapter := user.NewGetUserAdapter(dbAdapter)
+	updateUserAdapter := user.NewUpdateUserAdapter(dbAdapter)
 
 	// Usecase
 	createUserUsecase := usecases.NewCreateUserUsecase(createUserAdapter, getUserAdapter)

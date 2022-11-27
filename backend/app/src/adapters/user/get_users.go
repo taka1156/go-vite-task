@@ -7,7 +7,7 @@ import (
 )
 
 type GetUsersDependencies struct {
-	gormAdapter *database.GormAdapter
+	sqlAdapter *database.SqlAdapter
 }
 
 func (dep GetUsersDependencies) Do() ([]*model.User, error) {
@@ -36,6 +36,6 @@ func (dep GetUsersDependencies) Do() ([]*model.User, error) {
 	return users, nil
 }
 
-func NewGetUsersAdapter(gormAdapter *database.GormAdapter) usecases.GetUsersAdapter {
-	return &GetUsersDependencies{gormAdapter}
+func NewGetUsersAdapter(sqlAdapter *database.SqlAdapter) usecases.GetUsersAdapter {
+	return &GetUsersDependencies{sqlAdapter}
 }
