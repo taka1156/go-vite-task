@@ -3,73 +3,73 @@ package usecases
 import "app/entity/model"
 
 // user
-type CreateUserInteface interface {
+type CreateUserUsecase interface {
 	Handle(input model.InputUser) (*model.User, error)
 }
 
-type GetUsersInterface interface {
+type GetUsersUsecase interface {
 	Handle() ([]*model.User, error)
 }
 
-type UpdateUserInteface interface {
+type UpdateUserUsecase interface {
 	Handle(input model.UpdateUser) (*model.User, error)
 }
 
-type DeleteUserInterface interface {
+type DeleteUserUsecase interface {
 	Handle(userId int) (bool, error)
 }
 
 // team
-type CreateTeamInterface interface {
+type CreateTeamUsecase interface {
 	Handle(input model.InputTeam) (*model.Team, error)
 }
 
-type GetTeamsInterface interface {
+type GetTeamsUsecase interface {
 	Handle() ([]*model.Team, error)
 }
 
-type UpdateTeamInterface interface {
+type UpdateTeamUsecase interface {
 	Handle(input model.UpdateTeam) (*model.Team, error)
 }
 
-type DeleteTeamInterface interface {
-	Handle(teamId int) (*bool, error)
+type DeleteTeamUsecase interface {
+	Handle(teamId int) (bool, error)
 }
 
 // category
-type CreateCategoryInterface interface {
+type CreateCategoryUsecase interface {
 	Handle(createInput model.InputCategory) (*model.Category, error)
 }
 
-type GetCategoriesInterface interface {
+type GetCategoriesUsecase interface {
 	Handle() ([]*model.Category, error)
 }
 
-type UpdateCategoryInterface interface {
+type UpdateCategoryUsecase interface {
 	Handle(updateInput model.UpdateCategory) (*model.Category, error)
 }
 
-type DeleteCategoryInterface interface {
-	Handle(categoryId int) (*bool, error)
+type DeleteCategoryUsecase interface {
+	Handle(categoryId int) (bool, error)
 }
 
 // role
-type CreateRoleInterface interface {
+type CreateRoleUsecase interface {
 	Handle(input model.InputRole) (*model.Role, error)
 }
 
-type GetRoleInterface interface {
+type GetRoleUsecase interface {
 	Handle(roleId int) (*model.Role, error)
 }
 
-type GetRolesInterface interface {
+type GetRolesUsecase interface {
 	Handle() ([]*model.Role, error)
 }
 
-type UpdateRoleInterface interface {
+type UpdateRoleUsecase interface {
 	Handle(updateInput model.UpdateRole) (*model.Role, error)
 }
 
-type DeleteRoleInterface interface {
-	Handle(roleId int) (*bool, error)
+type DeleteRoleUsecase interface {
+	Handle(roleId int) (bool, error)
 }

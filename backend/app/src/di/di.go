@@ -1,15 +1,16 @@
 package di
 
 import (
-	"app/adapters/user"
+	"app/adapters/repository"
 	"app/envvars"
 	"app/infra/database"
 	"app/usecases"
+	"app/usecases/user"
 )
 
 type Function struct {
-	CreateUser usecases.CreateUserInteface
-	UpdateUser usecases.UpdateUserInteface
+	CreateUser usecases.CreateUserUsecase
+	UpdateUser usecases.UpdateUserUsecase
 }
 
 type Middleware struct {
@@ -30,14 +31,12 @@ func Do() {
 	// Infrastructure
 	dbAdapter := database.DBInit(envvars.DbEnv)
 
-	// Adapter
-	createUserAdapter := user.NewCreateUserAdapter(dbAdapter)
-	getUserAdapter := user.NewGetUserAdapter(dbAdapter)
-	updateUserAdapter := user.NewUpdateUserAdapter(dbAdapter)
+	// repository
+	userRepository := repository.NewUserRepository(dbAdapter)
 
 	// Usecase
-	createUserUsecase := usecases.NewCreateUserUsecase(createUserAdapter, getUserAdapter)
-	updateUserUsecase := usecases.NewUpdateUserUsecase(updateUserAdapter, getUserAdapter)
+	createUserUsecase := user.NewCreateUserUsecase(userRepository)
+	updateUserUsecase := user.NewUpdateUserUsecase(userRepository)
 
 	function = Function{
 		CreateUser: createUserUsecase,
